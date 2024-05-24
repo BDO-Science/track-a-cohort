@@ -76,8 +76,13 @@ historic <- loss2 %>%
         legend.title = element_blank(),
         plot.margin = ggplot2::margin(0.5,0.5,0.25,0.25, unit = 'cm'),
         axis.title.x = element_text(margin=ggplot2::margin(t=10)),
-        axis.title.y = element_text(margin=ggplot2::margin(r=10)))
+        axis.title.y = element_text(margin=ggplot2::margin(r=10)),
+        legend.position = "top")
 historic
+
+ggsave(historic,
+       filename = file.path(here::here("SH_Cohort/Figures/historic_SH_loss_barplot.png")), 
+       width = 8, height = 6, units = "in")
 
 #making graph for hatchery vs wild FL comparison with a few options
 size <- loss2 %>% #facets by WY
@@ -106,6 +111,9 @@ size2 <- loss2 %>% #facets by clipped vs unclipped with WY on Y axis
         axis.title.y = element_text(margin=ggplot2::margin(r=10)))
 size2
 
+ggsave(size2,filename = file.path(here::here("SH_Cohort/Figures/size_distribution_historical.png")), 
+       width = 6, height = 7, units = "in")
+
 size3 <- loss2 %>% #facets by clipped vs unclipped with WY2024 overlaying historic WYs combined
   filter(Length < 750) %>%
   ggplot() +
@@ -124,6 +132,9 @@ size3 <- loss2 %>% #facets by clipped vs unclipped with WY2024 overlaying histor
           axis.title.x = element_text(margin=ggplot2::margin(t=10)),
           axis.title.y = element_text(margin=ggplot2::margin(r=10)))
 size3
+
+ggsave(size3,filename = file.path(here::here("SH_Cohort/Figures/size_distribution.png")), 
+       width = 6, height = 7, units = "in")
 
 #################### Tillotson model hindcast
 #Load packages
@@ -236,6 +247,9 @@ tillGraph <- ggplot(PredLoss, aes(x = Week, group = 1, fill = median, color = me
         legend.position = 'none') +
   scale_fill_distiller(palette = 'Reds', direction = 1)
 tillGraph
+
+ggsave(tillGraph,filename = file.path(here::here("SH_Cohort/Figures/tillGraph.png")), 
+       width = 7, height = 6, units = "in")
 
 #################### Daily SH loss graph with export info
 cvp2 <- cdec_query('TRP', '70', 'D', "2023-12-25", Sys.Date()) %>%
