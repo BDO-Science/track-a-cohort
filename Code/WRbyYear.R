@@ -8,6 +8,8 @@ url <- "https://www.cbr.washington.edu/sacramento/data/php/rpt/juv_loss_detail.p
 loss <- read.csv(url) %>%
   filter(LAD.Race == 'Winter'| DNA.Race == 'Winter')
 waterDay <- readRDS('Code/waterDay.rds')
+root <- here::here()
+viz_output_root <- file.path(root,"Viz_Output")
 wytype <- read.csv('Data/WYtype.csv') %>% filter(Basin == "SacramentoValley") %>%mutate(TYPE = Yr.type)
 loss <- loss %>% select(Date = 1, 2, 5, 6, 11, 12, ExpSalv = 13, 14) %>%
   mutate(Date = as.Date(Date)) %>%
