@@ -5,7 +5,8 @@ library(patchwork)
 
 files <- list.files(path = here::here('Data/STARS/'))
 waterDay <- readRDS('Code/waterDay.rds')
-
+root <- here::here()
+viz_output_root <- file.path(root,"Viz_Output")
 stars <- read_csv(paste0('Data/STARS/',files)) %>% bind_rows() %>%
   select(1, surv = 2, survL80 = 3, survU80 = 4, idsurv = 17, idsurvL80 = 18, idsurvU80 = 19, idRoute = 32, idRouteL80 = 33, idRouteU80 = 34) %>% arrange(Date) %>%
   mutate(WY = get_fy(Date, opt_fy_start = '10-01')) %>%

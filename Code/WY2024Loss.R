@@ -12,7 +12,8 @@ salmon_links <- links[grep("salmon_", links, ignore.case = TRUE)]  # Select file
 salmon_links <- salmon_links[!grepl("summary", salmon_links, ignore.case = TRUE)]  # Exclude files containing "summary"
 salmon_links <- salmon_links[!grepl("table", salmon_links, ignore.case = TRUE)] # Exclude files containing "table"
 file <- max(grep("\\.csv$", salmon_links, value = TRUE, ignore.case = TRUE)) #isolate the most recent salmon salvage table
-
+root <- here::here()
+viz_output_root <- file.path(root,"Viz_Output")
 #read in salmon salvage file
 salmon <- read.csv(paste0('https://filelib.wildlife.ca.gov/',file)) %>%
   mutate(SampleDate = as.Date(SampleDate))

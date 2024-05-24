@@ -67,7 +67,7 @@ mal <- cdec_query('MAL', '25', 'H', min(loss$Date), max(loss$Date)) %>% #temp fr
   group_by(wyWeek) %>% summarize(mal = (mean(parameter_value)-32)*(5/9)) %>% na.omit()
 
 #put covariates into dataframe for Tillotson
-tillotson <- exports %>% left_join(WRLoss, by = 'wyWeek') %>% 
+tillotson <- exports %>% left_join(WRloss, by = 'wyWeek') %>% 
   left_join(sac, by = 'wyWeek') %>% 
   left_join(sjr, by = 'wyWeek') %>%
   left_join(omr, by = 'wyWeek') %>%
@@ -98,20 +98,28 @@ for(i in 1:nrow(tillotson)){
 PredLoss <- bind_rows(tillotsonList) %>% 
   left_join(wyWeeks, by = 'wyWeek') %>%
   rename('Qtl25' = 1, 'median' = 2, 'Qtl75' = 3, 'ObsLoss' = 9) %>%
-  mutate(Week = fct_inorder(factor(Week), ordered = NA))
+  mutate(Week = fct_inorder(factor(Week), ordered = NA)) %>%
+  mutate(OMR2 = ((OMR*-3) + 5000)/30)
 
-tillGraph <- ggplot(PredLoss, aes(x = Week, group = 1, fill = median, color = median)) +
+tillGraph <- ggplot(PredLoss) +
   # geom_line(aes(y = median), color = 'steelblue2') +
   #geom_ribbon(aes(ymin = Qtl25, ymax = Qtl75), fill = 'steelblue2', alpha = .4) +
-  geom_crossbar(aes(y = median, ymin = Qtl25, ymax = Qtl75), color = 'black', alpha = .5) +
-  geom_line(aes(y = ObsLoss), color = 'black', linetype = 'dashed',linewidth = 1, alpha = .75) +
+  geom_line(aes(x = Week, y = OMR2, group = 1), linetype = 'dashed', linewidth = 1) +
+  geom_crossbar(aes(x = Week, y = median, ymin = Qtl25, ymax = Qtl75, fill = median), color = 'black', alpha = .5) +
+  geom_point(aes(x = Week, y = ObsLoss), 
+             shape = 8, color = 'black', 
+             size = 2.5, alpha = .75, stroke = 1.5) +
+  scale_y_continuous(
+    sec.axis = sec_axis(~ (5000 - (. * 30)) / 3, name = "OMRI")
+  ) +
   labs(y = 'Weekly Loss') +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
         plot.margin = ggplot2::margin(0.5,0.5,0.25,0.25, unit = 'cm'),
         axis.title.x = element_text(margin=ggplot2::margin(t=10)),
         axis.title.y = element_text(margin=ggplot2::margin(r=10)),
+        axis.title.y.right = element_text(margin=ggplot2::margin(l=10)),
         legend.position = 'none') +
   scale_fill_distiller(palette = 'Reds', direction = 1)
 tillGraph
-
+view(theme_minimal)
 ggsave(tillGraph, file = 'Viz_Output/tillotson.png', units = 'px', width = 2250, height = 1250)
